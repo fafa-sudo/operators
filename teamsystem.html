@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operators Sys</title>
+    <title>Team Sys</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
@@ -29,12 +29,15 @@
         #loginHeader {
             display: flex;
             justify-content: space-between;
-             /*display: flex;*/
+            display: flex;
              justify-content: space-between;
             text-align:center;
             /*display: inline-flex; */
             align-items: center; /* Vertically center items */
             font-size: 30px;
+            margin-top: 5px;
+            padding: 10px; /* Add some padding to prevent overflow on small screens */
+            box-sizing: border-box; /* Include padding in width calculations */
         }
 
         #mainHeader {
@@ -46,6 +49,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            border: 3px solid black; /* Sets a thick black border for the table, th and td */
         }
 
         th,
@@ -56,11 +60,13 @@
             font-size: 22px;
             font-weight: bold;
             background-color: white;
+           
         }
 
         th {
             background-color: #007BFF;
             color: white;
+            border-bottom: 3px solid rgb(48, 233, 7); /* Thick bottom border for header cells */
         }
 
         .inputContainer {
@@ -319,11 +325,14 @@
             justify-content: center; /* Center the images and clock */
             align-items: center;
             margin: 20px 0; /* Adjust the margin as needed */
+            margin-bottom:35px;
+            margin-top:35px;
         }
 
         .tree-left,
         .tree-right {
-            width: 100px; /* Adjust the size as needed */
+            width: 300px; /* Adjust the size as needed */
+            height:100px;
         }
 
         .clock {
@@ -357,12 +366,13 @@
             display:inline-block;
         }
         #username,#password,#loginButton{
-            padding:5px;
+            padding:10px;
             border:bold;
             justify-content: center; /* Center the images and clock */
             align-items: center;
             color:black;
             margin-top:3px;
+            width:100%;
         }
         #loginButton{
             justify-content: center; /* Center the images and clock */
@@ -384,6 +394,15 @@
         }
        #loginDiv{
             display:flex;
+            background-color: white; /* Background for the login container */
+            padding: 10px; /* Padding inside the div */
+            border-radius: auto; /* Slightly rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            margin-top:8px; /* Maximum width of the container */
+            width: 100%; /* Full width up to the max width */
+            box-sizing: border-box; /* Include padding in width calculations */
+            text-align:center;
+            align-items:center;
         }
         .inputContainer {
             display:flex; /* Use flexbox */
@@ -403,7 +422,7 @@
     #toggleButtonsBtn{
         background-color:#51e62b;
         color:black;
-        transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+        transition: box-shadow 0.5s ease; /* Smooth transition for shadow */
     }
     #backBtn {
         margin-top:0;
@@ -442,16 +461,26 @@
             box-shadow: 5px 4px 15px rgba(0, 0, 0, 0.5);
             color:black;
         }
+        #dutyInputContainer{
+            display:flex; /* Use flexbox */
+            justify-content: space-between; /* Space between items */
+            align-items: center; /* Center items vertically */ 
+            color:black;
+            padding:20px;
+        }
+        #viewondutyBtn:hover{
+            background-color:#3f10d7
+        }
     </style>
 </head>
 
 <body>
     <div class="headlogin">
-    <h1 id="loginHeader">Login to get scheduled shifts <i class="fas fa-sign-in-alt"></i></h1>
+    <h1 id="loginHeader">Login Form to Get Teams <i class="fas fa-sign-in-alt"></i></h1>
 </div>
     <div id="loginDiv">
         <div class="inputContainer">
-            <input type="text" id="username" placeholder="Username (e.g: operator/supervisor)" />
+            <input type="text" id="username" placeholder="username(operator)" />
             <input type="password" id="password" placeholder="Password" />
             <button type="button" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login</button>
        
@@ -470,7 +499,7 @@
      <!-- Back button (initially hidden) -->
      <button id="backBtn" style="display: none;">&#8592; Back</button>
     <!-- Button to toggle the visibility of the nav-buttons -->
-<button id="toggleButtonsBtn" style="display:none;background:#12ca18;font-size:26px;font-weight:bold"><i class="fas fa-users" style="font-size:30px; color:black"></i>ALL OPERATORS</button>
+<button id="toggleButtonsBtn" style="display:none;background:#12ca18;font-size:26px;font-weight:bold"><i class="fas fa-users" style="font-size:30px; color:black"></i>OPERATORS</button>
     <div id="tablesDiv" class="hidden">
         <div class="nav-buttons" style="display: none;">
             <button class="nav-button" id="viewMembersBtn"><i class="fas fa-users"></i> View Team Members</button>
@@ -478,7 +507,7 @@
             <button class="nav-button" id="viewCommentsBtn"><i class="fas fa-comments"></i> View Comments</button>
             <button class="nav-button" id="viewDutyStatusBtn"><i class="fas fa-clock"></i> View Duty Status</button>
             <!--onduty-->
-            <button class="nav-button" id="viewondutyBtn"><i class="fas fa-user-check"></i> View Operators On Duty</button>
+            <button class="nav-button" id="viewondutyBtn"><i class="fas fa-user-check"></i> View Schedule Shifts</button>
         </div>
         <!-- Operators Section -->
         <div class="operators-section" id="membersSection">
@@ -587,13 +616,13 @@
             <h1>Weekly <strong>Time Table</strong> Teams on Duty</h1>
             <div class="inputContainer" id="dutyInputContainer">
                 <input type="text" id="weekDay" placeholder="Week Day" />
-                <input type="date" id="date" />
+                <input type="date" id="date" style="font-size:24px;height:32px;margin-bottom:10px" />
                 <input type="text" id="dayShift" placeholder="Day Shift" />
                 <input type="text" id="nightShift" placeholder="Night Shift" />
                 <input type="text" id="offDuty" placeholder="Off Duty" />
                 <button type="button" id="addDutyBtn" class="addButton"><i class="fas fa-plus"></i> Add</button>
             </div>
-            <table id="dutyTable">
+            <table id="dutyTable" style="margin-top:10px">
                 <thead>
                     <tr>
                         <th>S/No</th>
@@ -617,7 +646,7 @@
                 <input type="text" id="writtenBy" placeholder="Written By" />
                 <button type="button" id="addCommentBtn" class="addButton"><i class="fas fa-plus"></i> Add Comment</button>
             </div>
-            <table id="commentTable">
+            <table id="commentTable" style="margin-top:10px">
                 <thead>
                     <tr>
                         <th>S/No</th>
@@ -639,13 +668,13 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Duty Status Section -->
         <div id="dutyStatusSection" class="hidden">
             <h1>Duty Status</h1>
             <div class="duty-status">
-                <label for="dateInput" style="font-size: 22px; font-weight:bold; color: rgb(232, 232, 13);">Select a date:</label>
-                <input type="date" id="dateInput" />
+                <label for="dateInput" style="font-size: 32px; font-weight:bold; color: rgb(139, 55, 6);">Select a date:</label>
+                <input style="padding:10px; height:18px;width:auto;font-size:28px;color:black" type="date" id="dateInput" />
                 <br><br>
                 <button type="button" id="calculateBtn" class="addButton">
                     <i class="fas fa-calculator button-icon"></i> CALCULATE
@@ -664,14 +693,14 @@
             <h1 ><img  id="imagesize" src=" https://github.com/fafa-sudo/picture/blob/main/RAF_spectral.jpg?raw=true" alt="" class="small-image"><strong>Operators On Duty</strong><img src="https://github.com/fafa-sudo/picture/blob/main/Radar_scan.jpg?raw=true" alt="" class="small-image"></h1> <!-- Initially hidden -->
             <div class="tree-container">
                 <!-- Add tree images -->
-                <img src="https://raw.githubusercontent.com/fafa-sudo/picture/main/LTR25.png" alt="Tree Left" class="tree-left" id="leftTree">
+                <img src="https://raw.githubusercontent.com/fafa-sudo/picture/main/LTR25.png" alt="Tree Left" class="tree-left" id="leftTree" style="margin-left:15px">
                 <div class="clock" id="clock"></div>
-                <img src="https://raw.githubusercontent.com/fafa-sudo/picture/main/ACCS.png" alt="Tree Right" class="tree-right" id="rightTree">
+                <img src="https://raw.githubusercontent.com/fafa-sudo/picture/main/ACCS.png" alt="Tree Right" class="tree-right" id="rightTree" style="margin-right:15px">
             </div>
 
             <div id="addOperatorContainer" class="inputContainer">
                 <input type="text" id="shift" placeholder="Shift" />
-                <input type="text" id="soOperator" placeholder="SO Operator" />
+                <input type="text" id="soOperator" placeholder="SV Operator" />
                 <input type="text" id="idOperator" placeholder="ID Operator" />
                 <input type="text" id="supervisor" placeholder="Supervisor" />
                 <input type="text" id="remark" placeholder="Remark" />
@@ -683,7 +712,7 @@
                     <tr>
                         <th>S/No</th>
                         <th>Shift</th>
-                        <th>SO Operator</th>
+                        <th>SV Operator</th>
                         <th>ID Operator</th>
                         <th>Supervisor</th>
                         <th>Remark</th>
@@ -698,7 +727,7 @@
                     <span class="close">×</span>
                     <h2>Edit Operator</h2>
                     <input type="text" id="editShift" placeholder="Shift" />
-                    <input type="text" id="editSOOperator" placeholder="SO Operator" />
+                    <input type="text" id="editSOOperator" placeholder="SV Operator" />
                     <input type="text" id="editIDOperator" placeholder="ID Operator" />
                     <input type="text" id="editSupervisor" placeholder="Supervisor" />
                     <input type="text" id="editRemark" placeholder="Remark" />
