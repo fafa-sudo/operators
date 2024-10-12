@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCHEDULED SHIFT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        html,
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            border: 5px solid #830ad9;
+            background-color: #c0e4ea;
+        }
+
+        h1 {
+            background-color: #3515ed;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0;
+            text-align: center;
+        }
+
+        #loginHeader {
+            display: flex;
+            justify-content: space-between;
+            display: flex;
+             justify-content: space-between;
+            text-align:center;
+            /*display: inline-flex; */
+            align-items: center; /* Vertically center items */
+            font-size: 30px;
+            margin-top: 5px;
+            padding: 10px; /* Add some padding to prevent overflow on small screens */
+            box-sizing: border-box; /* Include padding in width calculations */
+        }
+
+        #mainHeader {
+            display: none;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid gray;
+            padding: 10px;
+            text-align: left;
+            font-size: 22px;
+            font-weight: bold;
+            background-color: white;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .inputContainer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        button {
+            margin-bottom: 10px;
+            width: auto;
+            flex-grow: 1;
+            flex: 1; /* Allow inputs to grow and fill the space */
+            margin-right: 10px; /* Space between input fields and button */
+            padding: 10px; /* Padding inside inputs */
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .deleteButton {
+            background-color: #dc3545;
+            color:black;
+            border: none;
+            border-radius: 5px;
+        }
+        .deleteButton:hover {
+            background-color:red;
+            color:white;
+            border: black;
+            border-radius: 5px;
+            box-shadow:brown;
+        }
+
+        .editButton {
+            background-color: #ffc107;
+            color: black;
+            border: none;
+            border-radius: 5px;
+        }
+        .editButton:hover {
+            background-color: #440bde;
+            color: white;
+            border: green;
+            border-radius: 5px;
+            box-shadow:blue;
+        }
+
+        .addButton {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .addButton:hover {
+            background-color:green;
+            color: violet;
+            border: none;
+            border-radius: 5px;
+            box-shadow:5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover {
+            color: black;
+            cursor: pointer;
+        }
+
+        #mainHeader {
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative; /* Position context for absolute elements */
+        }
+
+        .clock {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .centered-text {
+            text-align: center;
+            margin: 0;
+            font-size: 48px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-buttons {
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .nav-button:hover {
+            background-color: #41e60e;
+            color:black;
+        }
+        .duty-status {
+            background-color: rgb(105, 197, 243);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .current-date,
+        .selected-date {
+            border-radius: 5px;
+            color: rgb(88, 13, 218);
+        }
+        
+        .selected-date {
+            background-color: rgb(9, 181, 75);
+            padding: 5px;
+        }
+
+        .current-date {
+            background-color: rgb(174, 215, 25);
+            padding: 5px;
+        }
+
+        .on-duty {
+            background-color: yellow;
+            padding: 5px;
+            border-radius: 5px;
+            color: black;
+        }
+
+        .off-duty {
+            background-color: green;
+            padding: 5px;
+            border-radius: 5px;
+            color: white;
+        }
+        .calculateButt {
+            background-color: green;  /* Background color for button */
+            color: white;             /* Text color */
+            border: none;             /* No border */
+            border-radius: 5px;      /* Rounded corners */
+            padding: 10px;           /* Padding */
+            cursor: pointer;          /* Cursor style */
+            display: flex;            /* Align items horizontally */
+            align-items: center;      /* Center items vertically */
+            font-weight: bold; /* Bold text */
+        }
+
+        .button-icon {
+            margin-right: 5px;       /* Space between icon and text */
+            font-size: 1.2em;        /* Icon size */
+            font-weight: bold; /* Bold text */
+        }
+
+        .calculateButt:hover {
+            background-color: darkgreen; /* Darker shade on hover */
+        }
+
+        .duty-label {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+
+        .gray-label {
+            color: rgb(17, 21, 233);
+            background-color: rgba(24, 25, 25, 0.381);
+            font-size: 30px; /* Example font size */
+        }
+        .selecteddate {
+            color: black; /* Text color */
+            background-color: rgba(17, 166, 230, 0.381); /* Background color */
+            font-size: 30px; /* Example font size */
+            font-weight: bold; /* Bold text */
+            padding: 10px; /* Optional padding for better appearance */
+            border-radius: 5px; /* Optional rounded corners */
+        }
+        .dutystatus {
+            background-color: rgb(212, 244, 172);
+            padding: 15px;
+            border-radius: 10px;
+            color: rgb(5, 3, 11);
+            margin: 30px 0;
+        }
+        .duty-status {
+            background-color: rgb(105, 197, 243);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        #operatorsButton {
+            display: none; /* Initially hidden */
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            background-color:white; /* Original blue */
+            color: white; /* Text color */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px;
+            cursor: pointer; /* Pointer cursor */
+            font-size: 16px; /* Font size */
+            margin-bottom: 20px; /* Space below the button */
+        }
+        /* Hover Effects for the Operators Button */
+        #operatorsButton:hover {
+            border: 2px solid #ffc107;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+        }
+        .tree-container {
+            display: flex;
+            justify-content: center; /* Center the images and clock */
+            align-items: center;
+            margin: 20px 0; /* Adjust the margin as needed */
+            margin-bottom:35px;
+            margin-top:35px;
+        }
+
+        .tree-left,
+        .tree-right {
+            width: 300px; /* Adjust the size as needed */
+            height:100px;
+        }
+
+        .clock {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 20px; /* Space between the images and the clock */
+            color: white; /* Set clock text color */
+        }
+        /*style for image positioning left and right*/
+        #leftTree {
+            position: absolute; /* Allow precise positioning */
+            left: 0; /* Position at the left */
+            /* Optionally, you can adjust width and height */
+            /* width: 100px; /* Set a specific width */
+            /* height: auto; /* Maintain aspect ratio */
+        }
+        #rightTree {
+            position: absolute; /* Allow precise positioning */
+            /*top: 0; /* Position at the top */
+            right: 0; /* Position at the left */
+            /* Optionally, you can adjust width and height */
+            /* width: 100px; /* Set a specific width */
+            /* height: auto; /* Maintain aspect ratio */
+        }
+        #clock {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 20px; /* Space between the images and the clock */
+            color: white; /* Set clock text color */
+            background-color:black;
+            display:inline-block;
+        }
+        #username,#password,#loginButton{
+            padding:10px;
+            border:bold;
+            justify-content: center; /* Center the images and clock */
+            align-items: center;
+            color:black;
+            margin-top:3px;
+            width:100%;
+        }
+        #loginButton{
+            justify-content: center; /* Center the images and clock */
+            align-items: center;
+            color:black;  
+            padding: 10px 10px;
+            background-color: #12ca18; /* Button color */
+            border: bold; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            margin-top:3px;
+            box-shadow:#FF69B4;
+            transition: box-shadow 0.1s ease; /* Smooth transition */
+
+        }
+        #loginButton:hover{
+            color:black;  
+            background-color:rgb(220, 196, 15);
+        }
+       #loginDiv{
+            display:flex;
+            background-color: white; /* Background for the login container */
+            padding: 10px; /* Padding inside the div */
+            border-radius: auto; /* Slightly rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            margin-top:8px; /* Maximum width of the container */
+            width: 100%; /* Full width up to the max width */
+            box-sizing: border-box; /* Include padding in width calculations */
+            text-align:center;
+            align-items:center;
+        }
+        .inputContainer {
+            display:flex; /* Use flexbox */
+            justify-content: space-between; /* Space between items */
+            align-items: center; /* Center items vertically */
+        }
+        .small-image {
+    width: 40px;    /* Set the width */
+    height: auto;   /* Set the height */
+    }
+    #toggleButtonsBtn:hover{
+        background-color:#edcd13;
+        color:white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Shadow effect */
+        transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+    }
+    #toggleButtonsBtn{
+        background-color:#51e62b;
+        color:black;
+        transition: box-shadow 0.5s ease; /* Smooth transition for shadow */
+    }
+    #backBtn {
+        margin-top:0;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease;
+            font-size:20px;
+            font-weight:bold;
+            animation: borderCycle 6s infinite; /* Animation for cycling border styles */
+        }
+        /*Keyframes for cycling border styles */
+        @keyframes borderCycle {
+            0% {
+                border: 4px solid transparent; /* No border */
+            }
+            25% {
+                border: 4px solid #FF5733; /* Red border */
+           }
+            50% {
+                border: 4px solid #33FF57; /* Green border */
+            }
+            75% {
+                border: 4px solid #3357FF; /* Blue border */
+            }
+            100% {
+                border: 4px solid #FF33A1; /* Pink border */
+           }
+        }
+        
+        #backBtn:hover {
+            background-color: #e1a90f;
+            box-shadow: 5px 4px 15px rgba(0, 0, 0, 0.5);
+            color:black;
+        }
+        #dutyInputContainer{
+            display:flex; /* Use flexbox */
+            justify-content: space-between; /* Space between items */
+            align-items: center; /* Center items vertically */ 
+            color:black;
+            padding:20px;
+        }
+        .clearHistoryButton,
+        .clearCurrentTableButton {
+            margin-bottom: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        #delhistory{
+            background-color:red;
+            scrollbar-shadow-color: #28a745; 
+            font-weight: bold;
+        }
+        #delhistory:hover{
+            color:red;
+            background-color: white;
+            font-weight: bold;
+        }
+       
+    </style>
+</head>
+
+<body>
+    <h1 id="loginHeader">Login to get scheduled shifts on duty <i class="fas fa-sign-in-alt"></i></h1>
+
+    <div id="loginDiv">
+        <div class="inputContainer">
+            <input type="text" id="username" placeholder="Username" />
+            <input type="password" id="password" placeholder="Password" />
+            <button type="button" id="loginButton"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </div>
+        <p id="loginMessage" class="errorMessage"></p>
+    </div>
+
+    <div id="mainHeader" style="display: none;">
+        <h1 ><img  id="imagesize" src=" https://github.com/fafa-sudo/picture/blob/main/RAF_spectral.jpg?raw=true" alt="" class="small-image"><strong>Operators On Duty</strong><img src="https://github.com/fafa-sudo/picture/blob/main/Radar_scan.jpg?raw=true" alt="" class="small-image"></h1> <!-- Initially hidden -->
+            <div class="tree-container">
+                <!-- Add tree images -->
+                <img src="https://raw.githubusercontent.com/fafa-sudo/picture/main/LTR25.png" alt="Tree Left" class="tree-left" id="leftTree" style="margin-left:15px">
+                <div class="clock" id="clock"></div>
+                <img src="https://raw.githubusercontent.com/fafa-sudo/picture/main/ACCS.png" alt="Tree Right" class="tree-right" id="rightTree" style="margin-right:15px">
+            </div>
+
+    <div id="tablesDiv" style="display:none;">
+        <div id="addOperatorContainer" class="inputContainer supervisor-only">
+            <input type="text" id="shift" placeholder="Shift" />
+            <input type="text" id="soOperator" placeholder="SO Operator" />
+            <input type="text" id="idOperator" placeholder="ID Operator" />
+            <input type="text" id="supervisor" placeholder="Supervisor" />
+            <input type="text" id="remark" placeholder="Remark" />
+            <button type="button" id="addOperatorBtn" class="addButton"><i class="fas fa-plus"></i> Add</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <button type="button" id="historyButton" class="addButton"><i class="fas fa-history"></i> History</button>
+            <button type="button" id="clearCurrentTableButton" class="clearCurrentTableButton" style="display: none;"><i class="fas fa-trash"></i> Clear Current Table</button>
+        </div>
+
+        <table id="tableOperators">
+            <thead>
+                <tr>
+                    <th data-column="s/no">S/No</th>
+                    <th class="hidden" style="cursor: pointer;" data-column="timestamp">Timestamp</th>
+                    <th data-column="shift">Shift</th>
+                    <th data-column="soOperator">SO Operator</th>
+                    <th data-column="idOperator">ID Operator</th>
+                    <th data-column="supervisor">Supervisor</th>
+                    <th data-column="remark">Remark</th>
+                    <th class="actionColumn supervisor-only">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="operatorsList"></tbody>
+        </table>
+
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h2>Edit Operator</h2>
+                <input type="text" id="editShift" placeholder="Shift" />
+                <input type="text" id="editSOOperator" placeholder="SV Operator" />
+                <input type="text" id="editIDOperator" placeholder="ID Operator" />
+                <input type="text" id="editSupervisor" placeholder="Supervisor" />
+                <input type="text" id="editRemark" placeholder="Remark" />
+                <button id="saveEditBtn">Save</button>
+            </div>
+        </div>
+
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h2>History</h2>
+                <button id="clearHistoryButton" class="clearHistoryButton" style="display: none;">Clear All History</button>
+                <table id="historyTable" style="margin: 0 auto;">
+                    <thead>
+                        <tr>
+                            <th>S/No</th>
+                            <th data-column="timestamp">Timestamp</th>
+                            <th>Action</th>
+                            <th>Shift</th>
+                            <th>SO Operator</th>
+                            <th>ID Operator</th>
+                            <th>Supervisor</th>
+                            <th>Remark</th>
+                            <th class="actionColumn supervisor-only">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, getDoc, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbm1ApKMcu9Q8HwJwKqROgBNndtr1Vl_8",
+            authDomain: "tstdb-8e676.firebaseapp.com",
+            projectId: "tstdb-8e676",
+            storageBucket: "tstdb-8e676.appspot.com",
+            messagingSenderId: "995214869280",
+            appId: "1:995214869280:web:58ce365c970bd53300cd45"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let currentEditId = '';
+        let userRole = '';
+
+        // Function to format the date and time 
+        function formatTimestamp(date) {
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: false // ensures 24-hour format
+            };
+
+            // Format the string to remove the timezone information
+            return new Date(date).toLocaleString('en-GB', options).replace(',', '').replace('GMT', '');
+        }
+
+        // Load operators
+        function loadOperators() {
+            onSnapshot(collection(db, "operatorsOnDuty"), snapshot => {
+                const operators = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderOperators(operators);
+            });
+        }
+
+        // Render Operators
+        function renderOperators(operators) {
+            operators.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            const tbody = document.getElementById('operatorsList');
+            tbody.innerHTML = ''; // Clear existing operators
+            operators.forEach((operator, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td class="hidden">${formatTimestamp(operator.timestamp)}</td>
+                    <td>${operator.shift}</td>
+                    <td>${operator.soOperator}</td>
+                    <td>${operator.idOperator}</td>
+                    <td>${operator.supervisor || ''}</td>
+                    <td>${operator.remark || ''}</td>
+                    <td class="actionColumn supervisor-only">
+                        ${userRole === 'supervisor' ? 
+                            `<button class="editButton" data-id="${operator.id}"><i class="fas fa-edit"></i> Edit</button>
+                             <button class="deleteButton" data-id="${operator.id}"><i class="fas fa-trash"></i> Delete</button>` 
+                             : 
+                             ''
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load History 
+        function loadHistory() {
+            onSnapshot(collection(db, "operatorsHistory"), snapshot => {
+                const history = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderHistory(history);
+            });
+        }
+
+        // Render History
+        function renderHistory(history) {
+            history.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            const tbody = document.getElementById('historyList');
+            tbody.innerHTML = ''; // Clear existing history
+            history.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${formatTimestamp(entry.timestamp)}</td>
+                    <td>${entry.action}</td>
+                    <td>${entry.shift}</td>
+                    <td>${entry.soOperator}</td>
+                    <td>${entry.idOperator}</td>
+                    <td>${entry.supervisor || ''}</td>
+                    <td>${entry.remark || ''}</td>
+                    <td class="actionColumn supervisor-only">
+                        ${userRole === 'supervisor' ? 
+                            `<button class="deleteHistoryButton" id="delhistory" data-id="${entry.id}"><i class="fas fa-trash"></i> Delete</button>` 
+                            : 
+                            ''
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            document.getElementById('clearHistoryButton').style.display = userRole === 'supervisor' ? 'block' : 'none'; 
+        }
+// User login
+document.getElementById('loginButton').addEventListener('click', handleLogin);
+
+// Add event listeners for Enter key on input fields
+document.getElementById('username').addEventListener('keydown', function(event) {
+    if (event.key === "Enter") { // Check if Enter is pressed
+        handleLogin();
+    }
+});
+
+document.getElementById('password').addEventListener('keydown', function(event) {
+    if (event.key === "Enter") { // Check if Enter is pressed
+        handleLogin();
+    }
+});
+
+// Login handling function
+function handleLogin() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (username === 'supervisor' && password === 'supervisor') {
+        userRole = 'supervisor';
+        showMainContent();
+    } else if (username === 'operator' && password === 'operator') {
+        userRole = 'operator';
+        showMainContent();
+    } else if (username === 'admin' && password === 'admin') {
+        userRole = 'admin';
+        showMainContent();
+    } else {
+        document.getElementById('loginMessage').innerText = 'Invalid username or password.';
+    }
+}
+        // User login
+        document.getElementById('loginButton').addEventListener('click', () => {
+            const username = document.getElementById('username').value,
+                  password = document.getElementById('password').value;
+
+            if (username === 'supervisor' && password === 'supervisor') {
+                userRole = 'supervisor';
+                showMainContent();
+            } else if (username === 'operator' && password === 'operator') {
+                userRole = 'operator';
+                showMainContent();
+            } else if (username === 'admin' && password === 'admin') {
+                userRole = 'admin';
+                showMainContent();
+            } else {
+                document.getElementById('loginMessage').innerText = 'Invalid username or password.';
+            }
+        });
+
+        function showMainContent() {
+            document.getElementById('loginDiv').style.display = 'none';
+            document.getElementById('loginHeader').style.display = 'none';
+            document.getElementById('mainHeader').style.display = 'block';
+            document.getElementById('tablesDiv').style.display = 'block';
+             // Change background to include the image after login
+             document.body.style.backgroundImage = "url('https://github.com/fafa-sudo/picture/blob/main/RAF_spectral.jpg?raw=true')";
+            //document.body.style.backgroundSize = "cover"; // Ensure it covers the full background
+            document.body.style.backgroundSize = "80%"; // This zooms out the image
+            document.body.style.backgroundRepeat = "no-repeat"; // Prevent repeating
+            document.body.style.backgroundPosition = "center"; // Center the background image
+
+            // Show the tree images
+            document.getElementById('leftTree').style.display = 'block';
+            document.getElementById('rightTree').style.display = 'block';
+            
+            if (userRole === 'supervisor') {
+                document.getElementById('clearCurrentTableButton').style.display = 'block'; 
+                document.querySelectorAll('.supervisor-only').forEach(el => el.style.display = 'block'); 
+            } else {
+                document.getElementById('clearCurrentTableButton').style.display = 'none'; 
+                document.querySelectorAll('.supervisor-only').forEach(el => el.style.display = 'none'); 
+            }
+
+            loadOperators();
+        }
+
+        // Check for existing operator function
+        async function checkIfOperatorExists(operatorData) {
+            const operatorsSnapshot = await getDocs(collection(db, 'operatorsOnDuty'));
+            return operatorsSnapshot.docs.some(doc => {
+                const existingData = doc.data();
+                return existingData.shift === operatorData.shift &&
+                       existingData.soOperator === operatorData.soOperator &&
+                       existingData.idOperator === operatorData.idOperator;
+            });
+        }
+
+        document.getElementById('addOperatorBtn').addEventListener('click', async () => {
+            const operatorData = {
+                shift: document.getElementById('shift').value,
+                soOperator: document.getElementById('soOperator').value,
+                idOperator: document.getElementById('idOperator').value,
+                supervisor: document.getElementById('supervisor').value,
+                remark: document.getElementById('remark').value,
+                timestamp: new Date().toISOString() // Save current time as ISO format for Firestore
+            };
+
+            // Check if the operator already exists before adding to Firestore
+            const exists = await checkIfOperatorExists(operatorData);
+            if (!exists) {
+                await addDoc(collection(db, 'operatorsOnDuty'), operatorData);
+                await logHistory('Added', operatorData); // Log addition in history
+                clearOperatorFields();
+            } else {
+                alert('This record already exists.');
+            }
+        });
+
+        async function logHistory(action, data, existingEntryId = null) {
+            const historyData = {
+                timestamp: new Date().toISOString(), // Store in ISO format 
+                action: action,
+                shift: data.shift,
+                soOperator: data.soOperator,
+                idOperator: data.idOperator,
+                supervisor: data.supervisor,
+                remark: data.remark,
+            };
+
+            if (existingEntryId) {
+                // If there's an existing history entry, replace it
+                await updateDoc(doc(db, 'operatorsHistory', existingEntryId), historyData);
+            } else {
+                // Otherwise, add a new entry
+                await addDoc(collection(db, 'operatorsHistory'), historyData);
+            }
+        }
+
+        function clearOperatorFields() {
+            document.getElementById('shift').value = '';
+            document.getElementById('soOperator').value = '';
+            document.getElementById('idOperator').value = '';
+            document.getElementById('supervisor').value = '';
+            document.getElementById('remark').value = '';
+        }
+
+        document.getElementById('tablesDiv').addEventListener('click', async (event) => {
+            if (event.target.classList.contains('deleteButton') && userRole === 'supervisor') {
+                const id = event.target.getAttribute('data-id');
+                if (confirm("Are you sure you want to delete this entry?")) {
+                    await deleteDoc(doc(db, 'operatorsOnDuty', id));
+                    await logHistory('Deleted', { id: id }); // Log deletion in history
+                }
+            }
+
+            if (event.target.classList.contains('editButton') && userRole === 'supervisor') {
+                const id = event.target.getAttribute('data-id');
+                const docRef = doc(db, 'operatorsOnDuty', id);
+                const docSnap = await getDoc(docRef);
+                const operator = docSnap.data();
+
+                // Populate fields for editing
+                document.getElementById('editShift').value = operator.shift;
+                document.getElementById('editSOOperator').value = operator.soOperator;
+                document.getElementById('editIDOperator').value = operator.idOperator;
+                document.getElementById('editSupervisor').value = operator.supervisor || '';
+                document.getElementById('editRemark').value = operator.remark || '';
+
+                currentEditId = id;
+                document.getElementById('editModal').style.display = 'block';
+            }
+
+            if (event.target.classList.contains('deleteHistoryButton') && userRole === 'supervisor') {
+                const id = event.target.getAttribute('data-id');
+                if (confirm("Are you sure you want to delete this history entry?")) {
+                    await deleteDoc(doc(db, 'operatorsHistory', id)); 
+                    loadHistory(); 
+                }
+            }
+        });
+
+        document.getElementById('saveEditBtn').addEventListener('click', async () => {
+            if (currentEditId) {
+                const updatedData = {
+                    shift: document.getElementById('editShift').value,
+                    soOperator: document.getElementById('editSOOperator').value,
+                    idOperator: document.getElementById('editIDOperator').value,
+                    supervisor: document.getElementById('editSupervisor').value,
+                    remark: document.getElementById('editRemark').value,
+                    timestamp: new Date().toISOString() // Update timestamp to ISO format
+                };
+
+                await updateDoc(doc(db, 'operatorsOnDuty', currentEditId), updatedData);
+
+                // Log the update in the history table by retrieving the existing history record
+                const historySnapshot = await getDocs(collection(db, 'operatorsHistory'));
+                const matchingHistoryDoc = historySnapshot.docs.find(doc => doc.data().idOperator === updatedData.idOperator);
+
+                if (matchingHistoryDoc) {
+                    // If matching history entry exists, update it
+                    await logHistory('Updated', updatedData, matchingHistoryDoc.id); // Use existing ID to replace in history
+                } else {
+                    // If no matching history entry exists, add a new one
+                    await logHistory('Added', updatedData);
+                }
+
+                clearEditFields();
+                currentEditId = "";
+                document.getElementById('editModal').style.display = 'none'; // Hide modal after saving
+                loadOperators(); // Reload Operators
+            }
+        });
+
+        function clearEditFields() {
+            document.getElementById('editShift').value = '';
+            document.getElementById('editSOOperator').value = '';
+            document.getElementById('editIDOperator').value = '';
+            document.getElementById('editSupervisor').value = '';
+            document.getElementById('editRemark').value = '';
+        }
+
+        // Close modal when clicking on X
+        const closeButtons = document.querySelectorAll('.close');
+        closeButtons.forEach(button => {
+            button.onclick = function () {
+                currentEditId = "";
+                document.getElementById('editModal').style.display = 'none';
+                document.getElementById('historyModal').style.display = 'none';
+            };
+        }); // end close code
+        
+        document.getElementById('historyButton').addEventListener('click', () => {
+            loadHistory(); 
+            document.getElementById('historyModal').style.display = 'block'; 
+        });
+
+        document.getElementById('historyModal').addEventListener('click', async (event) => {
+            if (event.target.id === 'clearHistoryButton' && userRole === 'supervisor') {
+                if (confirm("Are you sure you want to delete all entries in the history? This action cannot be undone.")) {
+                    const historySnapshot = await getDocs(collection(db, 'operatorsHistory'));
+                    const batch = writeBatch(db);
+                    historySnapshot.docs.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+                    await batch.commit(); 
+                    loadHistory(); 
+                }
+            }
+        });
+
+        document.getElementById('clearCurrentTableButton').addEventListener('click', async () => {
+            if (confirm("Are you sure you want to clear the current operators table? This action cannot be undone.")) {
+                const operatorsSnapshot = await getDocs(collection(db, 'operatorsOnDuty'));
+                const batch = writeBatch(db);
+                operatorsSnapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref); 
+                });
+                await batch.commit(); 
+                loadOperators(); 
+            }
+        });
+
+        // Function to update the time displayed
+        function updateTime() {
+            const now = new Date();
+
+            // Format the date using toLocaleString without time zone
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: false // ensures 24-hour format
+            };
+
+            // Format and clean the string output 
+            const timeString = now.toLocaleString('en-GB', options).replace(',', '').replace('GMT', '');
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        setInterval(updateTime, 1000); 
+        updateTime();
+    </script>
+</body>
+
+</html>
