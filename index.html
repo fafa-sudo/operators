@@ -798,24 +798,24 @@ function handleLogin() {
         });
 
         async function logHistory(action, data, existingEntryId = null) {
-            const historyData = {
-                timestamp: new Date().toISOString(), // Store in ISO format 
-                action: action,
-                shift: data.shift,
-                soOperator: data.soOperator,
-                idOperator: data.idOperator,
-                supervisor: data.supervisor,
-                remark: data.remark,
-            };
+    const historyData = {
+        timestamp: data.timestamp, // Keep the original timestamp
+        action: action,
+        shift: data.shift,
+        soOperator: data.soOperator,
+        idOperator: data.idOperator,
+        supervisor: data.supervisor,
+        remark: data.remark,
+    };
 
-            if (existingEntryId) {
-                // If there's an existing history entry, replace it
-                await updateDoc(doc(db, 'operatorsHistory', existingEntryId), historyData);
-            } else {
-                // Otherwise, add a new entry
-                await addDoc(collection(db, 'operatorsHistory'), historyData);
-            }
-        }
+    if (existingEntryId) {
+        // If there's an existing history entry, replace it
+        await updateDoc(doc(db, 'operatorsHistory', existingEntryId), historyData);
+    } else {
+        // Otherwise, add a new entry
+        await addDoc(collection(db, 'operatorsHistory'), historyData);
+    }
+}
 
         function clearOperatorFields() {
             document.getElementById('shift').value = '';
@@ -861,36 +861,48 @@ function handleLogin() {
         });
 
         document.getElementById('saveEditBtn').addEventListener('click', async () => {
-            if (currentEditId) {
-                const updatedData = {
-                    shift: document.getElementById('editShift').value,
-                    soOperator: document.getElementById('editSOOperator').value,
-                    idOperator: document.getElementById('editIDOperator').value,
-                    supervisor: document.getElementById('editSupervisor').value,
-                    remark: document.getElementById('editRemark').value,
-                    timestamp: new Date().toISOString() // Update timestamp to ISO format
-                };
+    if (currentEditId) {
+        const updatedData = {
+            shift: document.getElementById('editShift').value,
+            soOperator: document.getElementById('editSOOperator').value,
+            idOperator: document.getElementById('editIDOperator').value,
+            supervisor: document.getElementById('editSupervisor').value,
+            remark: document.getElementById('editRemark').value,
+            // Do NOT update the timestamp, keep it as it was
+            // timestamp: existingTimestamp  // Comment this line out 
+        };
 
-                await updateDoc(doc(db, 'operatorsOnDuty', currentEditId), updatedData);
+        // Fetch the current operator's document to obtain the original timestamp
+        const docRef = doc(db, 'operatorsOnDuty', currentEditId);
+        const docSnap = await getDoc(docRef);
+        const currentOperatorData = docSnap.data();
 
-                // Log the update in the history table by retrieving the existing history record
-                const historySnapshot = await getDocs(collection(db, 'operatorsHistory'));
-                const matchingHistoryDoc = historySnapshot.docs.find(doc => doc.data().idOperator === updatedData.idOperator);
+        // Maintain the original timestamp for the update
+        updatedData.timestamp = currentOperatorData.timestamp; 
 
-                if (matchingHistoryDoc) {
-                    // If matching history entry exists, update it
-                    await logHistory('Updated', updatedData, matchingHistoryDoc.id); // Use existing ID to replace in history
-                } else {
-                    // If no matching history entry exists, add a new one
-                    await logHistory('Added', updatedData);
-                }
+        await updateDoc(docRef, updatedData); // Update the operator
 
-                clearEditFields();
-                currentEditId = "";
-                document.getElementById('editModal').style.display = 'none'; // Hide modal after saving
-                loadOperators(); // Reload Operators
-            }
-        });
+        // Log the update in the history maintaining the original timestamp
+        const historySnapshot = await getDocs(collection(db, 'operatorsHistory'));
+        const matchingHistoryDoc = historySnapshot.docs.find(doc => doc.data().idOperator === updatedData.idOperator);
+
+        if (matchingHistoryDoc) {
+            // Update the existing history entry without changing the timestamp
+            await logHistory('Updated', {
+                ...updatedData,
+                timestamp: currentOperatorData.timestamp // Use current operator's timestamp
+            }, matchingHistoryDoc.id);
+        } else {
+            // If no matching history entry exists, add a new one
+            await logHistory('Added', updatedData);
+        }
+
+        clearEditFields();
+        currentEditId = "";
+        document.getElementById('editModal').style.display = 'none'; // Hide modal after saving
+        loadOperators(); // Reload Operators
+    }
+});
 
         function clearEditFields() {
             document.getElementById('editShift').value = '';
